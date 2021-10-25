@@ -126,7 +126,7 @@ class Facebook:
                             csvdf.to_csv(f'./DOM/bot-facebook_fulldata.csv', index=False)
 
                             count = count+1
-                            # self.driver.execute_script("window.scrollTo(0, window.scrollY + 1100)")
+                            self.driver.execute_script("window.scrollTo(0, window.scrollY + 1100)")
                             if str(my_month) == str(sys.argv[2]):
                                 csvdf.to_csv(f'./DOM/bot-facebook_{my_month}_{hash_url}.csv', index=False)
                                 logging.info(csvdf)
@@ -142,6 +142,7 @@ class Facebook:
                                 break
                         else:
                             continue
+                else:break
 
 
     def run(self):
