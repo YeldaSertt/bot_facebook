@@ -7,7 +7,7 @@ import pytesseract
 from wand.image import Image as wi
 import pandas as pd
 
-PATH = os.listdir('OC/')
+PATH = os.listdir('OCR/')
 HASHLIST = []
 TEMPLIST = []
 OUTPUT = {}
@@ -15,7 +15,7 @@ OUTPUT = {}
 for u in PATH:
     hash_url = u.split("_")[-2]
     HASHLIST.append(hash_url)
-    pdf = wi(filename=f"OC/{u}", resolution=300)
+    pdf = wi(filename=f"OCR/{u}", resolution=300)
     pdfImage = pdf.convert('jpeg')
 
     imageBlobs = []
@@ -51,5 +51,5 @@ for out in OUTPUT:
         del image_text["text"]
 
     df = pd.DataFrame(OUTPUT[out])
-    df.to_csv(f'OC/bot-facebook_{out}.csv', index=False)
+    df.to_csv(f'OCR/bot-facebook_{out}.csv', index=False)
 
