@@ -1,22 +1,38 @@
 """This code converts images to text and extracts data with regex."""
+import io
 import os
 import re
 from PIL import Image
-import pytesseract as pt
+import pytesseract
+from wand.image import Image as wi
 import pandas as pd
-PATH = "OCR"
+
+PATH = os.listdir('OC/')
+HASHLIST = []
 TEMPLIST = []
-for imageName in os.listdir(PATH):
-    inputPath = os.path.join(PATH, imageName)
-    img = Image.open(inputPath)
-    text = pt.image_to_string(img, lang="tur")
-    imagePath = imageName.split("_")[-2]
-    fullTempPath = os.path.join('bot-facebook'+imagePath+".txt")
+OUTPUT = {}
+
+for u in PATH:
+    hash_url = u.split("_")[-2]
+    HASHLIST.append(hash_url)
+    pdf = wi(filename=f"OC/{u}", resolution=300)
+    pdfImage = pdf.convert('jpeg')
+
+    imageBlobs = []
+
+    if hash_url not in OUTPUT:
+        OUTPUT[hash_url] = []
+
+    for img in pdfImage.sequence:
+        imgPage = wi(image=img)
+        imageBlobs.append(imgPage.make_blob('jpeg'))
+    im = Image.open(io.BytesIO(imageBlobs[0]))
+    text = pytesseract.image_to_string(im, lang='tur')
     js = {}
     share = re.findall(r"(\d+) Paylaşım", text)
     if share:
         js["Paylaşım"] = "".join(share)
-        print(("".join(text)).split(js["Paylaşım"])[0])
+
     else:
         js["Paylaşım"] = "0"
     comment = re.findall(r"(\d+) Yorum", text)
@@ -24,9 +40,16 @@ for imageName in os.listdir(PATH):
         js["Yorum"] = "".join(comment)
     else:
         js["Yorum"] = "0"
-    TEMPLIST.append(js)
-    df = pd.DataFrame(TEMPLIST)
-    df.to_csv(f'OCR/bot-facebook_{imagePath}.csv', index=False)
-    file1 = open(fullTempPath, "w")
-    file1.write(text)
-    file1.close()
+
+    js["text"] = text
+    OUTPUT[hash_url].append(js)
+for out in OUTPUT:
+    for image_text in OUTPUT[out]:
+        with open(f'{out}.txt', "a") as f:
+            f.write(image_text["text"] + "\n")
+
+        del image_text["text"]
+
+    df = pd.DataFrame(OUTPUT[out])
+    df.to_csv(f'OC/bot-facebook_{out}.csv', index=False)
+
