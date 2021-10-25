@@ -79,71 +79,72 @@ class Facebook:
                 dizi = []
                 templist = []
                 sleep(7)
-            while True:
-                sleep(5)
-                if self.driver.find_elements_by_xpath("//div[contains(@class,'rq0escxv l9j0dhe7 du4w35lb fhuww2h9 hpfvmrgz gile2uim pwa15fzy g5gj957u aov4n071 oi9244e8 bi6gxh9e h676nmdw aghb5jc5')]/div//div[@class='j83agx80 l9j0dhe7 k4urcfbm']"):
-                    for item in self.driver.find_elements_by_xpath("//div[contains(@class,'rq0escxv l9j0dhe7 du4w35lb fhuww2h9 hpfvmrgz gile2uim pwa15fzy g5gj957u aov4n071 oi9244e8 bi6gxh9e h676nmdw aghb5jc5')]/div//div[@class='j83agx80 l9j0dhe7 k4urcfbm']"):
-                        gonderi_no = count
-                        try:
-                            post_date = item.find_element_by_xpath("./div//div[@class='qzhwtbm6 knvmm38d']/span/span/span/span/a/span").text
-                            date_parsed = dateparser.parse(
-                                post_date, date_formats=["%m-%d-%Y"]
-                            )
-                            my_month = date_parsed.strftime("%Y%m")
-                            post = item.find_element_by_xpath(".//div[contains(@class,'gmc6g5 cxmmr5t8 oygrvhab hcukyx3x c1et5uql i')]/div").text
-                        except: # pylint: disable=bare-except
-                            continue
-
-                        if post_date not in dizi or post not in dizi:
-                            dizi.append(post_date)
-                            dizi.append(post)
-                            like = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]//span[@class='pcp91wgn']").text
+                stop = True
+                while True:
+                    sleep(5)
+                    if stop:
+                        for item in self.driver.find_elements_by_xpath("//div[contains(@class,'rq0escxv l9j0dhe7 du4w35lb fhuww2h9 hpfvmrgz gile2uim pwa15fzy g5gj957u aov4n071 oi9244e8 bi6gxh9e h676nmdw aghb5jc5')]/div//div[@class='j83agx80 l9j0dhe7 k4urcfbm']"):
+                            gonderi_no = count
                             try:
-                                share = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]/div/div/span/div/span[contains(.,'Pay')]").text.replace("Paylaşım", "")
+                                post_date = item.find_element_by_xpath("./div//div[@class='qzhwtbm6 knvmm38d']/span/span/span/span/a/span").text
+                                date_parsed = dateparser.parse(
+                                    post_date, date_formats=["%m-%d-%Y"]
+                                )
+                                my_month = date_parsed.strftime("%Y%m")
+                                post = item.find_element_by_xpath(".//div[contains(@class,'gmc6g5 cxmmr5t8 oygrvhab hcukyx3x c1et5uql i')]/div").text
                             except: # pylint: disable=bare-except
-                                share = "0"
-                            try:
-                                comment = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]/div/div/div/span[contains(.,'Yorum')]").text.replace("Yorum", "")
-                            except: # pylint: disable=bare-except
-                                comment = "0"
+                                continue
+
+                            if post_date not in dizi or post not in dizi:
+                                dizi.append(post_date)
+                                dizi.append(post)
+                                like = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]//span[@class='pcp91wgn']").text
+                                try:
+                                    share = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]/div/div/span/div/span[contains(.,'Pay')]").text.replace("Paylaşım", "")
+                                except: # pylint: disable=bare-except
+                                    share = "0"
+                                try:
+                                    comment = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]/div/div/div/span[contains(.,'Yorum')]").text.replace("Yorum", "")
+                                except: # pylint: disable=bare-except
+                                    comment = "0"
 
 
-                            table_dict = {
-                                "Begeni":like,
-                                'Yorum':comment,
-                                'Paylasım':share,
-                            }
-                            templist.append(table_dict)
-                            csvdf = pd.DataFrame(templist)
+                                table_dict = {
+                                    "Begeni":like,
+                                    'Yorum':comment,
+                                    'Paylasım':share,
+                                }
+                                templist.append(table_dict)
+                                csvdf = pd.DataFrame(templist)
 
-                            #CSV
-                            path = os.path.join("./DOM")
-                            try:
-                                os.makedirs(path, exist_ok=True)
-                            except: # pylint: disable=bare-except
-                                pass
-
-                            csvdf.to_csv(f'./DOM/bot-facebook_fulldata.csv', index=False)
-
-                            count = count+1
-                            self.driver.execute_script("window.scrollTo(0, window.scrollY + 1100)")
-                            if str(my_month) == str(sys.argv[2]):
-                                csvdf.to_csv(f'./DOM/bot-facebook_{my_month}_{hash_url}.csv', index=False)
-                                logging.info(csvdf)
-                                self.driver.execute_script("document.body.style.zoom='110%'")
-                                #Image
-                                path = os.path.join("./OCR")
+                                #CSV
+                                path = os.path.join("./DOM")
                                 try:
                                     os.makedirs(path, exist_ok=True)
                                 except: # pylint: disable=bare-except
                                     pass
-                                self.driver.save_screenshot(f"./OCR/bot-facebook_{my_month}_{hash_url}_000{gonderi_no}.png")
-                            else:
-                                break
+
+                                csvdf.to_csv(f'./DOM/bot-facebook_fulldata.csv', index=False)
+                                count = count+1
+                                self.driver.execute_script("window.scrollTo(0, window.scrollY + 1100)")
+                                if str(my_month) == str(sys.argv[2]):
+                                    csvdf.to_csv(f'./DOM/bot-facebook_{my_month}_{hash_url}.csv', index=False)
+                                    logging.info(csvdf)
+                                    self.driver.execute_script("document.body.style.zoom='110%'")
+                                    #Image
+                                    path = os.path.join("./OCR")
+                                    try:
+                                        os.makedirs(path, exist_ok=True)
+                                    except: # pylint: disable=bare-except
+                                        pass
+                                    self.driver.save_screenshot(f"./OCR/bot-facebook_{my_month}_{hash_url}_000{gonderi_no}.png")
+                                else:
+                                    stop = False
                         else:
                             continue
-                else:break
-
+                    else:
+                        break
+        self.driver.quit()
 
     def run(self):
         """Selenium works in the order here"""
@@ -161,5 +162,5 @@ def main():
     """"Main"""
     Facebook()
 
-if __name__ == "__main__":
+if _name_ == "__main__":
     main()
