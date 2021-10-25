@@ -1,0 +1,15 @@
+glob
+os
+io
+re
+Pillow
+pytesseract
+Wand
+logging
+sys
+csv
+hashlib
+selenium 
+pandas
+dateparser
+imagemagick
