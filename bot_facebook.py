@@ -12,14 +12,26 @@ import pandas as pd
 import dateparser
 
 
-
 logging.basicConfig(stream=sys.stdout, format='%(message)s', level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format='%(message)s', level=logging.CRITICAL)
 class Facebook:
     """Class Facebook"""
+
     def __init__(self):
         """Code reads here first"""
         self.run()
 
+
+    def control(self):
+        """Code controls input format"""
+        date_parsed = dateparser.parse(
+            sys.argv[2], date_formats=["%Y%m"]
+        )
+        try:
+            date_parsed.strftime("%Y%m")
+        except:# pylint: disable=bare-except
+            logging.critical(" CRITICAL : You entered a non-format input for example =>> python bot_facebook.py --month 202101")
+            sys.exit()
     def set_driver(self):
         """Chrome settings are made"""
         options = se.webdriver.ChromeOptions()
@@ -28,7 +40,7 @@ class Facebook:
         opts = Options()
         opts.add_argument(f"--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36")
         opts.add_argument("--headless") #====> if you wanna close chrome open this comment
-        opts.add_argument("window-size=1920,1080")
+        # opts.add_argument("window-size=1920,1080")
         opts.add_argument("start-maximized")
         opts.add_argument("--no-sandbox")
         opts.add_argument("disable-gpu")
@@ -56,98 +68,105 @@ class Facebook:
 
     def login_profil(self):
         """data is pulled here"""
-        urllist = []
-        urls = open("URLS/url.lst", "r")
-        for url in urls:
-            urllist.append(url)
+        with open('URLS/url.lst', 'r+') as readurllist:
+            urllist = readurllist.read().splitlines()
 
-        count = 1
-        with open('url-md5.csv', 'w', encoding='UTF8', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            header = ['url', 'md5']
-            writer.writerow(header)
-            for url in urllist:
-                self.driver.get(url)
+        md5_url = []
+        for url in urllist:
+            count = 1
+            array = []
+            templist = []
+            self.driver.get(url)
+            sleep(5)
+            hash_url = self.hashurl(url)
+            self.driver.save_screenshot(f"bot-facebook_{hash_url}.png")
+            md5 = {}
+            md5["url"] = url
+            md5["hash_url"] = hash_url
+            md5_url.append(md5)
+            md5df = pd.DataFrame(md5_url)
+            sleep(5)
+            stop = True
+            Height = ""
+            while True:
                 sleep(5)
+                if stop:
+                    for item in self.driver.find_elements_by_xpath("//div[contains(@class,'rq0escxv l9j0dhe7 du4w35lb fhuww2h9 hpfvmrgz gile2uim pwa15fzy g5gj957u aov4n071 oi9244e8 bi6gxh9e h676nmdw aghb5jc5')]/div/div[not(contains(@class,'j83agx80 l9j0dhe7 k4urcfbm'))]"):
+                        gonderi_no = count
+                        self.driver.save_screenshot(f"ilkbot-facebook_{hash_url}.png")
+                        try:
+                            post_date = item.find_element_by_xpath("./div//div[@class='qzhwtbm6 knvmm38d']/span/span/span/span/a/span").text
+                            date_parsed = dateparser.parse(
+                                post_date, date_formats=["%m-%d-%Y"]
+                            )
+                            my_month = date_parsed.strftime("%Y%m")
+                            post = item.find_element_by_xpath(".//div[contains(@class,'gmc6g5 cxmmr5t8 oygrvhab hcukyx3x c1et5uql i')]/div").text
+                        except: # pylint: disable=bare-except
+                            continue
 
-                hash_url = self.hashurl(url)
-                sleep(5)
-                gonderi_no = count
-                sleep(5)
-                data = [url, hash_url]
-                writer.writerow(data)
-                dizi = []
-                templist = []
-                sleep(7)
-                stop = True
-                while True:
-                    sleep(5)
-                    if stop:
-                        for item in self.driver.find_elements_by_xpath("//div[contains(@class,'rq0escxv l9j0dhe7 du4w35lb fhuww2h9 hpfvmrgz gile2uim pwa15fzy g5gj957u aov4n071 oi9244e8 bi6gxh9e h676nmdw aghb5jc5')]/div//div[@class='j83agx80 l9j0dhe7 k4urcfbm']"):
-                            gonderi_no = count
+                        if post_date not in array or post not in array:
+                            array.append(post_date)
+                            array.append(post)
+                            # a =  e.find_element_by_xpath(f"[{gonderi_no}]")
+                            
+                            like = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]//span[@class='pcp91wgn']").text
                             try:
-                                post_date = item.find_element_by_xpath("./div//div[@class='qzhwtbm6 knvmm38d']/span/span/span/span/a/span").text
-                                date_parsed = dateparser.parse(
-                                    post_date, date_formats=["%m-%d-%Y"]
-                                )
-                                my_month = date_parsed.strftime("%Y%m")
-                                post = item.find_element_by_xpath(".//div[contains(@class,'gmc6g5 cxmmr5t8 oygrvhab hcukyx3x c1et5uql i')]/div").text
+                                share = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]/div/div/span/div/span[contains(.,'Pay')]").text.replace("Paylaşım", "")
                             except: # pylint: disable=bare-except
-                                continue
-
-                            if post_date not in dizi or post not in dizi:
-                                dizi.append(post_date)
-                                dizi.append(post)
-                                like = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]//span[@class='pcp91wgn']").text
-                                try:
-                                    share = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]/div/div/span/div/span[contains(.,'Pay')]").text.replace("Paylaşım", "")
-                                except: # pylint: disable=bare-except
-                                    share = "0"
-                                try:
-                                    comment = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]/div/div/div/span[contains(.,'Yorum')]").text.replace("Yorum", "")
-                                except: # pylint: disable=bare-except
-                                    comment = "0"
+                                share = "0"
+                            try:
+                                comment = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]/div/div/div/span[contains(.,'Yorum')]").text.replace("Yorum", "")
+                            except: # pylint: disable=bare-except
+                                comment = "0"
 
 
-                                table_dict = {
-                                    "Begeni":like,
-                                    'Yorum':comment,
-                                    'Paylasım':share,
-                                }
-                                templist.append(table_dict)
-                                csvdf = pd.DataFrame(templist)
+                            table_dict = {
+                                "Begeni":like,
+                                'Yorum':comment,
+                                'Paylasım':share,
+                            }
+                            templist.append(table_dict)
+                            csvdf = pd.DataFrame(templist)
 
-                                #CSV
-                                path = os.path.join("./DOM")
+                            #CSV
+                            path = os.path.join("./DOM")
+                            try:
+                                os.makedirs(path, exist_ok=True)
+                            except: # pylint: disable=bare-except
+                                pass
+
+                            csvdf.to_csv(f'./DOM/bot-facebook_fulldata.csv', index=False)
+                            count = count+1
+                            self.driver.execute_script("arguments[0].scrollIntoView(true);", item)
+                            Height = item.size["height"]
+                            sleep(10)
+                            if str(my_month) == str(sys.argv[2]):
+                                csvdf.to_csv(f'./DOM/bot-facebook_{my_month}_{hash_url}.csv', index=False)
+                                logging.info(csvdf)
+                                #Image
+                                path = os.path.join("./OCR")
                                 try:
                                     os.makedirs(path, exist_ok=True)
                                 except: # pylint: disable=bare-except
                                     pass
-
-                                csvdf.to_csv(f'./DOM/bot-facebook_fulldata.csv', index=False)
-                                count = count+1
-                                self.driver.execute_script("window.scrollTo(0, window.scrollY + 1100)")
-                                if str(my_month) == str(sys.argv[2]):
-                                    csvdf.to_csv(f'./DOM/bot-facebook_{my_month}_{hash_url}.csv', index=False)
-                                    logging.info(csvdf)
-                                    self.driver.execute_script("document.body.style.zoom='110%'")
-                                    #Image
-                                    path = os.path.join("./OCR")
-                                    try:
-                                        os.makedirs(path, exist_ok=True)
-                                    except: # pylint: disable=bare-except
-                                        pass
-                                    self.driver.save_screenshot(f"./OCR/bot-facebook_{my_month}_{hash_url}_000{gonderi_no}.png")
-                                else:
-                                    stop = False
-                        else:
-                            continue
-                    else:
-                        break
+                                item.screenshot(f"./OCR/bot-facebook_{my_month}_{hash_url}_{str(gonderi_no).zfill(4)}.png")
+                            else:
+                                stop = False
+                else:
+                    break
+            
+            ele=self.driver.find_element("xpath", '//div[contains(@class,"rq0escxv l9j0dhe7 du4w35lb fhuww2h9 hpfvmrgz gile2uim pwa15fzy g5gj957u aov4n071 oi9244e8 bi6gxh9e h676nmdw aghb5jc5")]')
+            total_height = ele.size["height"]+1000
+            self.driver.set_window_size(1920, total_height)      #the trick
+            sleep(5)
+            self.driver.save_screenshot(f"bot-facebook_{str(sys.argv[2])}_{hash_url}.png")
+            sleep(5)
+        md5df.to_csv("url-md5.csv", index=False)
         self.driver.quit()
 
     def run(self):
         """Selenium works in the order here"""
+        self.control()
         self.set_driver()
         self.login()
         self.login_profil()
@@ -162,5 +181,5 @@ def main():
     """"Main"""
     Facebook()
 
-if _name_ == "__main__":
+if __name__ == "__main__":
     main()
