@@ -31,7 +31,7 @@ class Facebook:
             sys.exit()
     def set_driver(self):
         """Chrome settings are made"""
-        driver_path = "c:\\chromedriver.exe"
+        driver_path = "chromedriver.exe"
         options = se.webdriver.ChromeOptions()
         options.add_argument('headless')
 
@@ -39,7 +39,9 @@ class Facebook:
         opts.add_argument("--headless") #====> if you wanna close chrome open this comment
         opts.add_argument("start-maximized")
         opts.add_argument("--no-sandbox")
-        opts.add_argument("disable-gpu")
+        # opts.add_argument("disable-gpu")
+        opts.add_argument("--force-gpu-mem-available-mb=4096")
+        opts.add_argument("--dns-prefetch-disable")
         opts.add_argument("disable-infobars")
         opts.add_argument("--disable-extensions")
         opts.add_experimental_option("prefs", {
@@ -50,7 +52,7 @@ class Facebook:
         self.driver = se.webdriver.Chrome(executable_path=driver_path,options=opts)
         sleep(2)
 
-    def login(self):
+    def login_profil(self):
         """login from facebook"""
         self.driver.get("https://tr-tr.facebook.com/")
         sleep(5)
@@ -61,10 +63,11 @@ class Facebook:
         self.driver.find_element_by_name("login").click()
         sleep(7)
 
-    def login_profil(self):
+    def profil(self):
         """data is pulled here"""
         with open('URLS/url.lst', 'r+') as readurllist:
             urllist = readurllist.read().splitlines()
+
         md5_url = []
         for url in urllist:
             count = 1
@@ -89,7 +92,7 @@ class Facebook:
                         gonderi_no = count
                         self.driver.save_screenshot(f"ilkbot-facebook_{hash_url}.png")
                         try:
-                            post_date = item.find_element_by_xpath("./div//div[@class='qzhwtbm6 knvmm38d']/span/span/span/span/a/span").text
+                            post_date = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]//span[@class='pcp91wgn']").text
                             date_parsed = dateparser.parse(
                                 post_date, date_formats=["%m-%d-%Y"]
                             )
@@ -129,7 +132,6 @@ class Facebook:
 
                             count = count+1
                             self.driver.execute_script("arguments[0].scrollIntoView(true);", item)
-                            Height = item.size["height"]
                             sleep(10)
                             if str(my_month) == str(sys.argv[2]):
                                 csvdf.to_csv(f'./DOM/bot-facebook_{my_month}_{hash_url}.csv', index=False)
@@ -140,7 +142,8 @@ class Facebook:
                                     os.makedirs(path, exist_ok=True)
                                 except: # pylint: disable=bare-except
                                     pass
-                                item.screenshot(f"./OCR/bot-facebook_{my_month}_{hash_url}_{str(gonderi_no).zfill(4)}.png")
+                                new_screenshot = item.find_element_by_xpath(".//div[@class='stjgntxs ni8dbmo4 l82x9zwi uo3d90p7 h905i5nu monazrh9']/div/div/div/div[@class='l9j0dhe7']")
+                                new_screenshot.screenshot(f"./OCR/bot-facebook_{my_month}_{hash_url}_{str(gonderi_no).zfill(4)}.png")
                             else:
                                 stop = False
                                 break
