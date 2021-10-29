@@ -1,12 +1,10 @@
-glob
-os
-io
+glob2
+os-sys
 re
 Pillow
 pytesseract
 Wand
 logging
-sys
 csv
 hashlib
 selenium 

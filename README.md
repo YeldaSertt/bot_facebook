@@ -5,6 +5,8 @@ sum_post.py kodu  ile toplanbegeni,toplamyorum ve toplampaylaşım csv dosyasın
 
 # Running Browser Tests on Linux
 
+Kodun çalışması için choromedriver.exe nin sürümü ile chorome sürümünün aynı olması gerekmektedir aksi halde hata vericektir. Dosya içerisinde yer alan choromedriver.exe 95.0.4638.54 sürümüne aittir.Eger sürümünüz aynı değilse  => https://chromedriver.chromium.org/downloads  adresinden aynı olan sürümü indiririz ve dosyada bulunan choromedriver.exe silip indirdiğiniz exe dosyasına yerleştiriniz.
+
 bot_facebook.py  =>> python bot_facebook --month 202110  # 202110 örneh verilmiştir istenilen ay bilgisini bu formatta yazınız
 
 ocr.py =>> python ocr.py
@@ -12,13 +14,15 @@ ocr.py =>> python ocr.py
 sum_post.py =>> python sum_post.py --dir DOM # DOM veya OCR yazılmalıdır.
 
 # Output
-Bu proje, number buldugu yeri string de ipuçlarını vermektedir. Çıkarılan veriler şu örneğe benziyor:
+Bu projede  çıkarılan veriler şu örneğe benziyor:
+
 bot_facebook.py
 Begeni,Paylasım,Yorum
 36,9 ,0
 24,0,0
 41,1 ,1 
 49,22 ,0
+
 sum_post.py
 ToplamBegeni,ToplamYorum,ToplamPaylasim
 88,0,0
