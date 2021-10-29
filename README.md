@@ -5,9 +5,9 @@ sum_post.py kodu  ile toplanbegeni,toplamyorum ve toplampaylaşım csv dosyasın
 
 # Running Browser Tests on Linux
 
-Kodun çalışması için choromedriver.exe nin sürümü ile chorome sürümünün aynı olması gerekmektedir aksi halde hata vericektir. Dosya içerisinde yer alan choromedriver.exe 95.0.4638.54 sürümüne aittir.Eger sürümünüz aynı değilse  => https://chromedriver.chromium.org/downloads  adresinden aynı olan sürümü indiririz ve dosyada bulunan choromedriver.exe silip indirdiğiniz exe dosyasına yerleştiriniz.
+Kodun çalışması için choromedriver.exe nin sürümü ile chorome sürümünün aynı olması gerekmektedir aksi halde hata vericektir. Dosya içerisinde yer alan choromedriver.exe 95.0.4638.54 sürümüne aittir.Eger sürümünüz aynı değilse  => https://chromedriver.chromium.org/downloads  adresinden aynı olan sürümü indiriniz ve dosyada bulunan choromedriver.exe silip indirdiğiniz exe dosyasına yerleştiriniz.
 
-bot_facebook.py  =>> python bot_facebook --month 202110  # 202110 örneh verilmiştir istenilen ay bilgisini bu formatta yazınız
+bot_facebook.py  =>> python bot_facebook --month 202110  # 202110 örnek verilmiştir istenilen ay bilgisini bu formatta yazınız
 
 ocr.py =>> python ocr.py
 
