@@ -74,7 +74,6 @@ class Facebook:
         """data is pulled here"""
         with open('URLS/url.lst', 'r+') as readurllist:
             urllist = readurllist.read().splitlines()
-        print(urllist)
         md5_url = []
         for url in urllist:
             count = 1
@@ -157,7 +156,6 @@ class Facebook:
                         else:
                             continue
                 else:
-                    print("breaktee")
                     break
             ele=self.driver.find_element("xpath", '//div[contains(@class,"rq0escxv l9j0dhe7 du4w35lb fhuww2h9 hpfvmrgz gile2uim pwa15fzy g5gj957u aov4n071 oi9244e8 bi6gxh9e h676nmdw aghb5jc5")]')
             total_height = ele.size["height"]+1000
