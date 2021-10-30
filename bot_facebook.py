@@ -19,6 +19,8 @@ class Facebook:
     def __init__(self):
         """Code reads here first"""
         self.run()
+
+
     def control(self):
         """Code controls input format"""
         try:
@@ -36,7 +38,11 @@ class Facebook:
         options.add_argument('headless')
 
         opts = Options()
+
+        opts.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36")
         opts.add_argument("--headless") #====> if you wanna close chrome open this comment
+        # opts.add_argument("window-size=1920,1080")
+        opts.add_argument("--disable-features=VizDisplayCompositor")
         opts.add_argument("start-maximized")
         opts.add_argument("--no-sandbox")
         # opts.add_argument("disable-gpu")
@@ -47,12 +53,13 @@ class Facebook:
         opts.add_experimental_option("prefs", {
             "profile.default_content_setting_values.notifications": 1
         })
+
         capabilities = webdriver.DesiredCapabilities.CHROME
 
         self.driver = se.webdriver.Chrome(executable_path=driver_path,options=opts)
         sleep(2)
 
-    def login_profil(self):
+    def login(self):
         """login from facebook"""
         self.driver.get("https://tr-tr.facebook.com/")
         sleep(5)
@@ -63,11 +70,11 @@ class Facebook:
         self.driver.find_element_by_name("login").click()
         sleep(7)
 
-    def profil(self):
+    def login_profil(self):
         """data is pulled here"""
         with open('URLS/url.lst', 'r+') as readurllist:
             urllist = readurllist.read().splitlines()
-
+        print(urllist)
         md5_url = []
         for url in urllist:
             count = 1
@@ -88,11 +95,11 @@ class Facebook:
             while True:
                 sleep(5)
                 if stop:
+                    sleep(5)
                     for item in self.driver.find_elements_by_xpath("//div[contains(@class,'rq0escxv l9j0dhe7 du4w35lb fhuww2h9 hpfvmrgz gile2uim pwa15fzy g5gj957u aov4n071 oi9244e8 bi6gxh9e h676nmdw aghb5jc5')]/div/div[not(contains(@class,'j83agx80 l9j0dhe7 k4urcfbm'))]/div/div"):
                         gonderi_no = count
-                        self.driver.save_screenshot(f"ilkbot-facebook_{hash_url}.png")
                         try:
-                            post_date = item.find_element_by_xpath(".//div[@class='l9j0dhe7']/div[contains(@class,'s1tcr66n')]//span[@class='pcp91wgn']").text
+                            post_date = item.find_element_by_xpath(".//div[@class='qzhwtbm6 knvmm38d']/span/span/span/span/a/span").text
                             date_parsed = dateparser.parse(
                                 post_date, date_formats=["%m-%d-%Y"]
                             )
@@ -150,10 +157,11 @@ class Facebook:
                         else:
                             continue
                 else:
+                    print("breaktee")
                     break
             ele=self.driver.find_element("xpath", '//div[contains(@class,"rq0escxv l9j0dhe7 du4w35lb fhuww2h9 hpfvmrgz gile2uim pwa15fzy g5gj957u aov4n071 oi9244e8 bi6gxh9e h676nmdw aghb5jc5")]')
             total_height = ele.size["height"]+1000
-            self.driver.set_window_size(1920, total_height)
+            self.driver.set_window_size(1920, total_height)      #the trick
             sleep(5)
             self.driver.save_screenshot(f"bot-facebook_{str(sys.argv[2])}_{hash_url}.png")
             sleep(5)
